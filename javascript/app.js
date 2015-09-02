@@ -14,6 +14,7 @@ $(document).ready(function(){
 
   function myTurnBro(shakaOrBro, movesArray, scoreClass, myTurnClass, theirTurnClass, that) {
     stopTimer();
+    $(that).addClass('clicked');
     $(that).html(shakaOrBro);
     newMove = $(that).attr('data').split(' ');
     $.merge(movesArray, newMove);
@@ -45,7 +46,7 @@ $(document).ready(function(){
   function reset(){
     shakaMoves = [];
     broMoves = [];
-    turnCounter -= 1;
+    turnCounter-- ;
     endOfGameCounter = -1;
     $('img').remove();
     $('.grid').removeClass('clicked');
@@ -70,31 +71,49 @@ $(document).ready(function(){
     clearTimeout(timer);
   }
 
-  function computerTurn(){
-    var randomClick = Math.floor(Math.random() * 9);
-    var grid = $('.grid');
-    if ($(grid[randomClick]).hasClass('clicked')){
-      computerTurn();
-    } else {
-      myTurnBro(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', $(grid[randomClick]));
+  // function computerTurn(){
+  //   var randomClick = Math.floor(Math.random() * 9);
+  //   var grid = $('.grid');
+  //   if ($(grid[randomClick]).hasClass('clicked')){
+  //     computerTurn();
+  //   } else {
+  //     myTurnBro(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', $(grid[randomClick]));
+  //   }
+  // }
+
+  function minimax(humanMoves, computerMoves){
+  var availableSpaces = $('.grid').not('.clicked');
+  for (var i=0;i<availableSpaces.length;i++){
+    var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
+    if (hasThreeInARow(broMoves.concat(possibleMove))){
+      return availableSpaces[i];
+    }
+    if (hasThreeInARow(shakaMoves.concat(possibleMove))){
+      return availableSpaces[i];
+    }
+    if (!$('.middle-center').hasClass('clicked')){
+      return $('.middle-center');
     }
   }
+  var pickAny = Math.floor(Math.random() * availableSpaces.length)
+    return availableSpaces[pickAny];
+}
+
 
   function play(context){
     //Prevents double clicks
     if ($(context).hasClass('clicked')){ 
       return 'nothing';
     }
-    $(context).addClass('clicked');
+    
     if (turnCounter % 2 === 0){
       var that = context;
-      console.log(context);
       myTurnBro(shaka, shakaMoves, '.shaka', '.shaka-turn', '.bro-turn', that);
       if(isPlayingAgainstComputer){
         $('.grid').off('click');
         setTimeout(function(){
-          computerTurn();
-          turnCounter -= 1;
+          myTurnBro(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', minimax());
+          turnCounter--;
           $('.grid').on('click', function(){
             var that = this;
             play(that);
@@ -117,7 +136,6 @@ $(document).ready(function(){
   });
   
 });
-
 
 
 
