@@ -45,7 +45,7 @@ $(document).ready(function(){
   function reset(){
     shakaMoves = [];
     broMoves = [];
-    turnCounter = -1;
+    turnCounter -= 1;
     endOfGameCounter = -1;
     $('img').remove();
     $('.grid').removeClass('clicked');
@@ -80,11 +80,6 @@ $(document).ready(function(){
     }
   }
 
-  $('.grid').on('click', function(){
-    var that = this;
-    play(that);
-  });
-
   function play(context){
     //Prevents double clicks
     if ($(context).hasClass('clicked')){ 
@@ -116,6 +111,10 @@ $(document).ready(function(){
     }
   }
 
+  $('.grid').on('click', function(){
+    var that = this;
+    play(that);
+  });
   
 });
 
