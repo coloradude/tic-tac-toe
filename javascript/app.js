@@ -10,7 +10,7 @@ $(document).ready(function(){
   var bro = '<img src="images/bro.png">';
   var positions = ['left', 'top', 'right', 'horizontal', 'vertical', 'diagonal-left', 'diagonal-right'];
   var timer;
-  var playingAgainstComputer = true;
+  var isPlayingAgainstComputer = (prompt('Do you want to play against a computer? YES or NO').toLowerCase() === 'yes');
 
   function myTurnBro(shakaOrBro, movesArray, scoreClass, myTurnClass, theirTurnClass, that) {
     stopTimer();
@@ -80,40 +80,43 @@ $(document).ready(function(){
     }
   }
 
-  switchTurnsCountdown();
-
   $('.grid').on('click', function(){
-    
+    var that = this;
+    play(that);
+  });
+
+  function play(context){
     //Prevents double clicks
-    if ($(this).hasClass('clicked')){ 
+    if ($(context).hasClass('clicked')){ 
       return 'nothing';
     }
-    $(this).addClass('clicked');
-
-    //Shaka turn
+    $(context).addClass('clicked');
     if (turnCounter % 2 === 0){
-      var that = this;
+      var that = context;
+      console.log(context);
       myTurnBro(shaka, shakaMoves, '.shaka', '.shaka-turn', '.bro-turn', that);
-      console.log(turnCounter);
-      if(playingAgainstComputer){
+      if(isPlayingAgainstComputer){
+        $('.grid').off('click');
         setTimeout(function(){
           computerTurn();
           turnCounter -= 1;
+          $('.grid').on('click', function(){
+            var that = this;
+            play(that);
+          });
           return 'nothing';
         }, 5000);
       }
-
-    //Bro turn
     } else {
-      var that = this;
+      var that = context;
       myTurnBro(bro, broMoves, '.bro', '.bro-turn', '.shaka-turn', that);
     }
-
-    //Need to add modal
     if (endOfGameCounter === 9){
       reset();
     }
-  });
+  }
+
+  
 });
 
 
