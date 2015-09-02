@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel='stylesheet' href='stylesheets/style.css'>
+  </head>
+  <body>
+  	<div class='row head col-md-12'>
+  		<h1>Tic-Tac-Bro</h1>
+  	</div>
+  	
+  		<div class='shaka-scoreboard scoreboard col-md-3'>
+		  	<h2>Shaka</h2>
+	  		<h2 class='shaka scores'>0</h2>
+		  </div>
+	  	<div class='gameboard col-md-6'>
+			  <div class='row gameboard-row'>
+			  	<div class='seperator'></div>
+		    	<div class='grid top-left' data='top left diagonal-left'><h1 class='none'>a</h1></div>
+		    	<div class='grid top-center' data='top vertical'><h1 class='none'>a</h1></div>
+		    	<div class='grid top-right' data='top right diagonal-right'><h1 class='none'>a</h1></div>
+		    	<div class='seperator'></div>
+		    </div>
+		    <div class='row gameboard-row'>
+		    	<div class='grid middle-left' data='horizontal left'></div>
+		    	<div class='grid middle-center' data='horizontal vertical diagonal-right diagonal-left'></div>
+		    	<div class='grid middle-right' data='horizontal right'></div>
+		    </div>
+		    <div class='row gameboard-row'>
+		    	<div class='grid bottom-left' data='bottom left diagonal-right'></div>
+		    	<div class='grid bottom-center' data='bottom vertical'></div>
+		    	<div class='grid bottom-right' data='bottom right diagonal-left'></div>
+		    </div>
+		  </div>
+		 	<div class='bro-scoreboard scoreboard col-md-3'>
+  			<h2>Bro</h2>
+	  		<h2 class='bro scores'>0</h2>
+  		</div>
+
+	  <div class='row foot'></div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script type="text/javascript" src='javascript/app.js'></script>
+	 </body>
+</html>
