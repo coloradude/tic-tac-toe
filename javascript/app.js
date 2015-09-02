@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
   var turnCounter = 0;
+  var endOfGameCounter = 0;
   var shakaScore = 0;
   var broScore = 0;
   var shakaMoves = [];
@@ -8,6 +9,20 @@ $(document).ready(function(){
   var shaka = '<img src="images/shaka.png">';
   var bro = '<img src="images/bro.png">';
   var positions = ['left', 'top', 'right', 'horizontal', 'vertical', 'diagonal-left', 'diagonal-right'];
+
+  function myTurnBro(teamName, movesArray, score, className, that) {
+    $(that).html(teamName);
+    newMove = $(that).attr('data').split(' ');
+    $.merge(movesArray, newMove);
+    if (hasThreeInARow(movesArray)) {
+      score += 1;
+      $(className).html(score);
+      reset();
+      turnCounter += 1;
+    }
+    endOfGameCounter += 1
+    turnCounter += 1;
+  }
 
   function hasThreeInARow(playerMoves){
     var recurrences = playerMoves.reduce(function(obj, val){
@@ -25,6 +40,7 @@ $(document).ready(function(){
     shakaMoves = [];
     broMoves = [];
     turnCounter = -1;
+    endOfGameCounter = 0;
     $('img').remove();
     $('.grid').removeClass('clicked');
   }
@@ -32,37 +48,32 @@ $(document).ready(function(){
   $('.grid').on('click', function(){
     
     //Prevents double clicks
-    if ($(this).hasClass('clicked')){
+    if ($(this).hasClass('clicked')){ 
       return 'nothing';
     }
     $(this).addClass('clicked');
 
     //Shaka turn
     if (turnCounter % 2 === 0){
-      $(this).html(shaka);
-      shakaMoves = $(this).attr('data').split(' ').concat(shakaMoves);
-      if (hasThreeInARow(shakaMoves)) { 
-        shakaScore += 1;
-        $('.shaka').html(shakaScore);
-        reset();
-        turnCounter +=1
-      }
-      turnCounter += 1;
+      var that = this;
+      myTurnBro(shaka, shakaMoves, shakaScore, '.shaka', that);
 
     //Bro turn
     } else {
-      broMoves = $(this).attr('data').split(' ').concat(broMoves);
-      $(this).html(bro);
-      if (hasThreeInARow(broMoves)){
-        broScore += 1;
-        $('.bro').html(broScore);
-        reset();
-        turnCounter += 1;
-      }
-      turnCounter += 1;
+      var that = this;
+      myTurnBro(bro, broMoves, broScore, '.bro', that);
+    }
+
+    //Need to add popup somewhere
+    if (endOfGameCounter === 9){
+      reset();
     }
   });
 });
+
+
+
+
 
 
 
