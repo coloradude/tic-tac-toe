@@ -45,6 +45,14 @@ img {
  
 }
 
+.shaka-turn {
+  text-align: center;
+}
+
+.bro-turn {
+  text-align: center;
+}
+
 .none {
   display: none;
 }
