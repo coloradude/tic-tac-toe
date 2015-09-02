@@ -16,6 +16,7 @@ $(document).ready(function(){
     $.merge(movesArray, newMove);
     if (hasThreeInARow(movesArray)) {
       score += 1;
+      console.log(score, broScore, shakaScore)
       $(className).html(score);
       reset();
       turnCounter += 1;
@@ -29,6 +30,7 @@ $(document).ready(function(){
       obj[val] = obj[val] + 1 || 1;
       return obj;
     },{});
+    console.log(recurrences);
     for (anyMove in recurrences){
       if (recurrences[anyMove] === 3) {
         return true;
@@ -40,7 +42,7 @@ $(document).ready(function(){
     shakaMoves = [];
     broMoves = [];
     turnCounter = -1;
-    endOfGameCounter = 0;
+    endOfGameCounter = -1;
     $('img').remove();
     $('.grid').removeClass('clicked');
   }
@@ -64,7 +66,7 @@ $(document).ready(function(){
       myTurnBro(bro, broMoves, broScore, '.bro', that);
     }
 
-    //Need to add popup somewhere
+    //Need to add modal
     if (endOfGameCounter === 9){
       reset();
     }
