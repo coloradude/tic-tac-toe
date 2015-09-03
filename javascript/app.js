@@ -10,6 +10,7 @@ $(document).ready(function(){
   var bro = '<img src="images/bro.png">';
   var positions = ['left', 'top', 'right', 'horizontal', 'vertical', 'diagonal-left', 'diagonal-right'];
   var timer;
+  var avoidCorners;
 
   function myTurn(shakaOrBro, movesArray, scoreClass, myTurnClass, theirTurnClass, that) {
     stopTimer();
@@ -56,7 +57,7 @@ $(document).ready(function(){
         turnCounter++;
         $(theirTurnClass).slideDown('fast');
         $(myTurnClass).css('display', 'none');
-      }, 5000)
+      }, 1000)
     }
     if (turnCounter % 2 === 0){
       switchTurn('.shaka-turn', '.bro-turn');
@@ -70,10 +71,12 @@ $(document).ready(function(){
   }
 
   function minimax(humanMoves, computerMoves){
-    var avoidCorners;
     var availableSpaces = $('.grid').not('.clicked');
     if (avoidCorners){
-      //
+      var notACorner = $(availableSpaces).not('.top-left, .top-right, .bottom-left, .bottom-right');
+      console.log(notACorner);
+      avoidCorners = false;
+      return notACorner[0];
     }
     for (var i=0;i<availableSpaces.length;i++){
       var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
@@ -85,6 +88,7 @@ $(document).ready(function(){
       }
       if (!$('.middle-center').hasClass('clicked') && endOfGameCounter == 1){
         avoidCorners = true;
+        console.log(avoidCorners);
         return $('.middle-center');
       }
     }
@@ -102,7 +106,7 @@ $(document).ready(function(){
           play(that);
         });
         return 'nothing';
-      }, 5000);
+      }, 1000);
   }
 
   function play(thatSquare){
