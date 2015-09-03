@@ -4,6 +4,7 @@ $(document).ready(function(){
   var endOfGameCounter = 0;
   var shakaScore = 0;
   var broScore = 0;
+  var waitTime = 1000;
   var shakaMoves = [];
   var broMoves = [];
   var shaka = '<img src="images/shaka.png">';
@@ -17,7 +18,8 @@ $(document).ready(function(){
     $(that).addClass('clicked');
     $(that).html(shakaOrBro);
     newMove = $(that).attr('data').split(' ');
-    $.merge(movesArray, newMove);
+    movesArray = $.merge(movesArray, newMove);
+    console.log(movesArray);
     if (hasThreeInARow(movesArray)) {
       var score = Number($(scoreClass).html());
       $(scoreClass).html(score + 1);
@@ -28,6 +30,9 @@ $(document).ready(function(){
     endOfGameCounter++;
     turnCounter++;
     switchTurnsCountdown();
+    if (endOfGameCounter === 9){
+      reset(); 
+    }
   }
 
   function hasThreeInARow(playerMoves){
@@ -46,7 +51,7 @@ $(document).ready(function(){
     shakaMoves = [];
     broMoves = [];
     turnCounter = 0 ;
-    endOfGameCounter = -1;
+    endOfGameCounter = 0;
     $('img').remove();
     $('.grid').removeClass('clicked');
   }
@@ -57,7 +62,7 @@ $(document).ready(function(){
         turnCounter++;
         $(theirTurnClass).slideDown('fast');
         $(myTurnClass).css('display', 'none');
-      }, 1000)
+      }, waitTime)
     }
     if (turnCounter % 2 === 0){
       switchTurn('.shaka-turn', '.bro-turn');
@@ -70,27 +75,29 @@ $(document).ready(function(){
     clearTimeout(timer);
   }
 
-  function minimax(humanMoves, computerMoves){
+  function computerLogic(humanMoves, computerMoves){
     var availableSpaces = $('.grid').not('.clicked');
+    function winOrBlock(movesArray){
+      for (var i=0;i<availableSpaces.length;i++){
+        var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
+        if (hasThreeInARow(movesArray.concat(possibleMove))){
+          console.log('returned '+ movesArray)
+          return availableSpaces[i];
+        }
+      }
+    }
+    if(winOrBlock(broMoves)) { return winOrBlock(broMoves) };
+    if (winOrBlock(shakaMoves)) { return winOrBlock(shakaMoves) };
+
     if (avoidCorners){
       var notACorner = $(availableSpaces).not('.top-left, .top-right, .bottom-left, .bottom-right');
-      console.log(notACorner);
       avoidCorners = false;
+      console.log('avoided corners')
       return notACorner[0];
     }
-    for (var i=0;i<availableSpaces.length;i++){
-      var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
-      if (hasThreeInARow(broMoves.concat(possibleMove))){
-        return availableSpaces[i];
-      }
-      if (hasThreeInARow(shakaMoves.concat(possibleMove))){
-        return availableSpaces[i];
-      }
-      if (!$('.middle-center').hasClass('clicked') && endOfGameCounter == 1){
-        avoidCorners = true;
-        console.log(avoidCorners);
-        return $('.middle-center');
-      }
+    if (!$('.middle-center').hasClass('clicked') && endOfGameCounter == 1){
+      avoidCorners = true;
+      return $('.middle-center');
     }
     var pickAny = Math.floor(Math.random() * availableSpaces.length)
       return availableSpaces[pickAny];
@@ -99,14 +106,14 @@ $(document).ready(function(){
   function computersTurn(){
     $('.grid').off('click');
       setTimeout(function(){
-        myTurn(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', minimax());
+        myTurn(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', computerLogic());
         turnCounter--;
         $('.grid').on('click', function(){
           var that = this;
           play(that);
         });
         return 'nothing';
-      }, 1000);
+      }, waitTime);
   }
 
   function play(thatSquare){
@@ -115,16 +122,14 @@ $(document).ready(function(){
     }
     myTurn(shaka, shakaMoves, '.shaka', '.shaka-turn', '.bro-turn', thatSquare);
     computersTurn();
-    if (endOfGameCounter === 9){
-      reset();
-    }
+    console.log(endOfGameCounter);
+    
   }
 
   $('.grid').on('click', function(){
     var that = this;
     play(that);
   });
-  
 });
 
 
