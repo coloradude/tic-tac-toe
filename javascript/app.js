@@ -10,9 +10,8 @@ $(document).ready(function(){
   var bro = '<img src="images/bro.png">';
   var positions = ['left', 'top', 'right', 'horizontal', 'vertical', 'diagonal-left', 'diagonal-right'];
   var timer;
-  var isPlayingAgainstComputer = (prompt('Do you want to play against a computer? YES or NO').toLowerCase() === 'yes');
 
-  function myTurnBro(shakaOrBro, movesArray, scoreClass, myTurnClass, theirTurnClass, that) {
+  function myTurn(shakaOrBro, movesArray, scoreClass, myTurnClass, theirTurnClass, that) {
     stopTimer();
     $(that).addClass('clicked');
     $(that).html(shakaOrBro);
@@ -22,7 +21,6 @@ $(document).ready(function(){
       var score = Number($(scoreClass).html());
       $(scoreClass).html(score + 1);
       reset();
-      turnCounter++;
     }
     $(theirTurnClass).slideDown('fast');
     $(myTurnClass).css('display', 'none');
@@ -46,7 +44,7 @@ $(document).ready(function(){
   function reset(){
     shakaMoves = [];
     broMoves = [];
-    turnCounter-- ;
+    turnCounter = 0 ;
     endOfGameCounter = -1;
     $('img').remove();
     $('.grid').removeClass('clicked');
@@ -71,60 +69,48 @@ $(document).ready(function(){
     clearTimeout(timer);
   }
 
-  // function computerTurn(){
-  //   var randomClick = Math.floor(Math.random() * 9);
-  //   var grid = $('.grid');
-  //   if ($(grid[randomClick]).hasClass('clicked')){
-  //     computerTurn();
-  //   } else {
-  //     myTurnBro(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', $(grid[randomClick]));
-  //   }
-  // }
-
   function minimax(humanMoves, computerMoves){
-  var availableSpaces = $('.grid').not('.clicked');
-  for (var i=0;i<availableSpaces.length;i++){
-    var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
-    if (hasThreeInARow(broMoves.concat(possibleMove))){
-      return availableSpaces[i];
+    var avoidCorners;
+    var availableSpaces = $('.grid').not('.clicked');
+    if (avoidCorners){
+      //
     }
-    if (hasThreeInARow(shakaMoves.concat(possibleMove))){
-      return availableSpaces[i];
+    for (var i=0;i<availableSpaces.length;i++){
+      var possibleMove = $(availableSpaces[i]).attr('data').split(' ');
+      if (hasThreeInARow(broMoves.concat(possibleMove))){
+        return availableSpaces[i];
+      }
+      if (hasThreeInARow(shakaMoves.concat(possibleMove))){
+        return availableSpaces[i];
+      }
+      if (!$('.middle-center').hasClass('clicked') && endOfGameCounter == 1){
+        avoidCorners = true;
+        return $('.middle-center');
+      }
     }
-    if (!$('.middle-center').hasClass('clicked')){
-      return $('.middle-center');
-    }
+    var pickAny = Math.floor(Math.random() * availableSpaces.length)
+      return availableSpaces[pickAny];
   }
-  var pickAny = Math.floor(Math.random() * availableSpaces.length)
-    return availableSpaces[pickAny];
-}
 
+  function computersTurn(){
+    $('.grid').off('click');
+      setTimeout(function(){
+        myTurn(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', minimax());
+        turnCounter--;
+        $('.grid').on('click', function(){
+          var that = this;
+          play(that);
+        });
+        return 'nothing';
+      }, 5000);
+  }
 
-  function play(context){
-    //Prevents double clicks
-    if ($(context).hasClass('clicked')){ 
+  function play(thatSquare){
+    if ($(thatSquare).hasClass('clicked')){ 
       return 'nothing';
     }
-    
-    if (turnCounter % 2 === 0){
-      var that = context;
-      myTurnBro(shaka, shakaMoves, '.shaka', '.shaka-turn', '.bro-turn', that);
-      if(isPlayingAgainstComputer){
-        $('.grid').off('click');
-        setTimeout(function(){
-          myTurnBro(bro, broMoves, '.bro', 'shaka-turn', 'bro-turn', minimax());
-          turnCounter--;
-          $('.grid').on('click', function(){
-            var that = this;
-            play(that);
-          });
-          return 'nothing';
-        }, 5000);
-      }
-    } else {
-      var that = context;
-      myTurnBro(bro, broMoves, '.bro', '.bro-turn', '.shaka-turn', that);
-    }
+    myTurn(shaka, shakaMoves, '.shaka', '.shaka-turn', '.bro-turn', thatSquare);
+    computersTurn();
     if (endOfGameCounter === 9){
       reset();
     }
